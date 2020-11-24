@@ -34,8 +34,19 @@
     }
 
     class VTCard extends HTMLElement {
-        constructor() {
+        constructor(interval) {
             super()
+            this.autoDestroy(interval)
+        }
+
+        destroy() {
+            this.remove()
+        }
+
+        autoDestroy(interval) {
+            setTimeout(() => {
+                this.destroy();
+            }, interval);
         }
     }
 
@@ -93,15 +104,19 @@
     document.body.appendChild(vtContainer)
 
     window.vt = {
-        success(message = "Hi!", position = toastPosition.TopCenter) {
-            const col = document.querySelector(`vt-col[position='${position}']`)
+        defaultOptions: {
+            position: toastPosition.TopCenter,
+            interval: 3000
+        },
+        success(message = "Hi!", options = this.defaultOptions) {
+            const col = document.querySelector(`vt-col[position='${options.position}']`)
 
-            const card = new VTCard()
+            const card = new VTCard(options.interval)
             card.innerHTML = message;
 
             col.appendChild(card)
 
-            console.log(message, position, col)
+            console.log(message, options.position, col)
         }
     }
 
