@@ -1,0 +1,19 @@
+{
+  "name": "vanilla-toast",
+  "version": "1.0.0",
+  "description": "Pure Javascript Toast Alert Message",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mehmetemineker/vanilla-toast.git"
+  },
+  "author": "Mehmet Emin Eker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mehmetemineker/vanilla-toast/issues"
+  },
+  "homepage": "https://github.com/mehmetemineker/vanilla-toast#readme"
+}
