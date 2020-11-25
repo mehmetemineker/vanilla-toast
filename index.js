@@ -36,7 +36,7 @@
         constructor(position) {
             super()
 
-            this.setAttribute("position", position)
+            this.className = position
         }
     }
 
@@ -46,6 +46,7 @@
             this.focus = false
             this.autoDestroy(options.duration)
             this.resolve = options.resolve
+            this.ypos = options.position.indexOf("top") > -1 ? "top" : "bottom"
 
             const textGroupDiv = document.createElement("div")
 
@@ -77,17 +78,18 @@
                 this.autoDestroy(options.duration)
             })
 
-            this.style.setProperty("margin-top", "-15px")
+            this.style.setProperty(`margin-${this.ypos}`, "-15px")
             this.style.setProperty("opacity", "0")
 
             setTimeout(() => {
-                this.style.setProperty("margin-top", "15px")
+                this.style.setProperty(`margin-${this.ypos}`, "15px")
+
                 this.style.setProperty("opacity", "1")
             }, 50)
         }
 
         destroy() {
-            this.style.setProperty("margin-top", "-" + this.offsetHeight + "px")
+            this.style.setProperty(`margin-${this.ypos}`, `-${this.offsetHeight}px`)
             this.style.setProperty("opacity", "0")
             setTimeout(() => {
                 this.remove()
@@ -138,6 +140,16 @@
             align-items: center;
         }
 
+        vt-col.top-left,
+        vt-col.bottom-left {
+            align-items: flex-start;
+        }
+
+        vt-col.top-right,
+        vt-col.bottom-right {
+            align-items: flex-end;
+        }
+
         vt-card {
             display: flex;
             justify-content: center;
@@ -148,8 +160,6 @@
             color: #000;
             border-radius: 4px;
             margin: 0px;
-           
-            opacity: 1;
             transition: 0.3s all ease-in-out;
             pointer-events: all;
             border-left: 3px solid #8b8b8b;
@@ -236,7 +246,7 @@
         return new Promise((resolve) => {
             options = { ...window.vt.options, ...options }
 
-            const col = document.querySelector(`vt-col[position='${options.position}']`)
+            const col = document.getElementsByClassName(options.position)[0]
 
             const card = new VTCard({
                 ...options, ...{
