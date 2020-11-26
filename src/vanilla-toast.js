@@ -20,101 +20,8 @@
         error: '<svg viewBox="0 0 51.976 51.976" width=18 height=18> <path d="M44.373 7.603c-10.137-10.137-26.632-10.138-36.77 0-10.138 10.138-10.137 26.632 0 36.77s26.632 10.138 36.77 0c10.137-10.138 10.137-26.633 0-36.77zm-8.132 28.638a2 2 0 0 1-2.828 0l-7.425-7.425-7.778 7.778a2 2 0 1 1-2.828-2.828l7.778-7.778-7.425-7.425a2 2 0 1 1 2.828-2.828l7.425 7.425 7.071-7.071a2 2 0 1 1 2.828 2.828l-7.071 7.071 7.425 7.425a2 2 0 0 1 0 2.828z" fill="#D80027" /> </svg>'
     }
 
-    class VTContainer extends HTMLElement {
-        constructor() {
-            super()
-        }
-    }
-
-    class VTRow extends HTMLElement {
-        constructor() {
-            super()
-        }
-    }
-
-    class VTCol extends HTMLElement {
-        constructor(position) {
-            super()
-
-            this.className = position
-        }
-    }
-
-    class VTCard extends HTMLElement {
-        constructor(options) {
-            super()
-            this.focus = false
-            this.autoDestroy(options.duration)
-            this.resolve = options.resolve
-            this.ypos = options.position.indexOf("top") > -1 ? "top" : "bottom"
-
-            const textGroupDiv = document.createElement("div")
-
-            textGroupDiv.className = "text-group"
-
-            if (options.title) {
-                textGroupDiv.innerHTML = `<h4>${options.title}</h4>`
-            }
-
-            textGroupDiv.innerHTML += `<p>${options.message}</p>`
-
-            this.innerHTML += svgs[options.type]
-            this.className = options.type
-
-            this.appendChild(textGroupDiv)
-
-            this.addEventListener("click", () => {
-                if (options.closable) {
-                    this.destroy()
-                }
-            })
-
-            this.addEventListener("mouseover", () => {
-                this.focus = options.focusable
-            })
-
-            this.addEventListener("mouseout", () => {
-                this.focus = false
-                this.autoDestroy(options.duration)
-            })
-
-            this.style.setProperty(`margin-${this.ypos}`, "-15px")
-            this.style.setProperty("opacity", "0")
-
-            setTimeout(() => {
-                this.style.setProperty(`margin-${this.ypos}`, "15px")
-
-                this.style.setProperty("opacity", "1")
-            }, 50)
-        }
-
-        destroy() {
-            this.style.setProperty(`margin-${this.ypos}`, `-${this.offsetHeight}px`)
-            this.style.setProperty("opacity", "0")
-            setTimeout(() => {
-                this.remove()
-                this.resolve("ok")
-            }, 500)
-        }
-
-        autoDestroy(duration) {
-            if (duration !== 0) {
-                setTimeout(() => {
-                    if (!this.focus) {
-                        this.destroy()
-                    }
-                }, duration)
-            }
-        }
-    }
-
-    customElements.define("vt-container", VTContainer)
-    customElements.define("vt-row", VTRow)
-    customElements.define("vt-col", VTCol)
-    customElements.define("vt-card", VTCard)
-
     const styles = `
-        vt-container {
+        .vt-container {
             position: fixed;
             width: 100%;
             height: 100vh;
@@ -127,12 +34,12 @@
             pointer-events: none;
         }
 
-        vt-row {
+        .vt-row {
             display: flex;
             justify-content: space-between;
         }
 
-        vt-col {
+        .vt-col {
             flex: 1;
             margin: 10px 20px;
             display: flex;
@@ -140,17 +47,17 @@
             align-items: center;
         }
 
-        vt-col.top-left,
-        vt-col.bottom-left {
+        .vt-col.top-left,
+        .vt-col.bottom-left {
             align-items: flex-start;
         }
 
-        vt-col.top-right,
-        vt-col.bottom-right {
+        .vt-col.top-right,
+        .vt-col.bottom-right {
             align-items: flex-end;
         }
 
-        vt-card {
+        .vt-card {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -166,34 +73,34 @@
             cursor: pointer;
         }
 
-        vt-card.success {
+        .vt-card.success {
             border-left: 3px solid #6ec05f;
         }
 
-        vt-card.warn {
+        .vt-card.warn {
             border-left: 3px solid #fed953;
         }
 
-        vt-card.info {
+        .vt-card.info {
             border-left: 3px solid #1271ec;
         }
 
-        vt-card.error {
+        .vt-card.error {
             border-left: 3px solid #d60a2e;
         }
 
-        vt-card .text-group {
+        .vt-card .text-group {
             margin-left: 15px;
         }
 
-        vt-card h4 {
+        .vt-card h4 {
             margin: 0;
             margin-bottom: 10px;
             font-size: 16px;
             font-weight: 500;
         }
 
-        vt-card p {
+        .vt-card p {
             margin: 0;
             font-size: 14px;
         }
@@ -203,13 +110,16 @@
     styleSheet.innerText = styles.replace((/  |\r\n|\n|\r/gm), "")
     document.head.appendChild(styleSheet)
 
-    const vtContainer = new VTContainer()
+    const vtContainer = document.createElement("div")
+    vtContainer.className = "vt-container"
 
     for (const ri of [0, 1]) {
-        const row = new VTRow()
+        const row = document.createElement("div")
+        row.className = "vt-row"
 
         for (const ci of [0, 1, 2]) {
-            const col = new VTCol(toastPositionIndex[ri][ci])
+            const col = document.createElement("div")
+            col.className = `vt-col ${toastPositionIndex[ri][ci]}`
 
             row.appendChild(col)
         }
@@ -225,38 +135,111 @@
             position: toastPosition.TopCenter,
             duration: 2000,
             closable: true,
-            focusable: true
+            focusable: true,
+            callback: undefined
         },
         success(message, options) {
-            return show(message, options, "success")
-
+            show(message, options, "success")
         },
         info(message, options) {
-            return show(message, options, "info")
+            show(message, options, "info")
         },
         warn(message, options) {
-            return show(message, options, "warn")
+            show(message, options, "warn")
         },
         error(message, options) {
-            return show(message, options, "error")
+            show(message, options, "error")
         }
     }
 
     function show(message = "My name is Toast, Vanilla Toast.", options, type) {
-        return new Promise((resolve) => {
-            options = { ...window.vt.options, ...options }
+        options = { ...window.vt.options, ...options }
 
-            const col = document.getElementsByClassName(options.position)[0]
+        const col = document.getElementsByClassName(options.position)[0]
 
-            const card = new VTCard({
-                ...options, ...{
-                    message,
-                    type: type,
-                    resolve: resolve
-                }
-            })
+        const vtCard = document.createElement("div")
+        vtCard.className = `vt-card ${type}`
+        vtCard.innerHTML += svgs[type]
+        vtCard.options = {
+            ...options, ...{
+                message,
+                type: type,
+                yPos: options.position.indexOf("top") > -1 ? "top" : "bottom",
+                isFocus: false
+            }
+        }
 
-            col.appendChild(card)
+        setVTCardContent(vtCard)
+        setVTCardIntroAnim(vtCard)
+        setVTCardBindEvents(vtCard)
+        autoDestroy(vtCard)
+
+        
+
+        col.appendChild(vtCard)
+    }
+
+    function setVTCardContent(vtCard) {
+        const textGroupDiv = document.createElement("div")
+
+        textGroupDiv.className = "text-group"
+
+        if (vtCard.options.title) {
+            textGroupDiv.innerHTML = `<h4>${vtCard.options.title}</h4>`
+        }
+
+        textGroupDiv.innerHTML += `<p>${vtCard.options.message}</p>`
+
+        vtCard.appendChild(textGroupDiv)
+    }
+
+    function setVTCardIntroAnim(vtCard) {
+        vtCard.style.setProperty(`margin-${vtCard.options.yPos}`, "-15px")
+        vtCard.style.setProperty("opacity", "0")
+
+        setTimeout(() => {
+            vtCard.style.setProperty(`margin-${vtCard.options.yPos}`, "15px")
+            vtCard.style.setProperty("opacity", "1")
+        }, 50)
+    }
+
+    function setVTCardBindEvents(vtCard) {
+        vtCard.addEventListener("click", () => {
+            if (vtCard.options.closable) {
+                destroy(vtCard)
+            }
         })
+
+        vtCard.addEventListener("mouseover", () => {
+            vtCard.options.isFocus = vtCard.options.focusable
+        })
+
+        vtCard.addEventListener("mouseout", () => {
+            vtCard.options.isFocus = false
+            autoDestroy(vtCard, vtCard.options.duration)
+        })
+    }
+
+    function destroy(vtCard) {
+        vtCard.style.setProperty(`margin-${vtCard.options.yPos}`, `-${vtCard.offsetHeight}px`)
+        vtCard.style.setProperty("opacity", "0")
+
+        setTimeout(() => {
+            vtCard.parentNode.removeChild(v)
+
+            if (typeof vtCard.options.callback === "function") {
+                vtCard.options.callback()
+            }
+        }, 500)
+    }
+
+    function autoDestroy(vtCard) {
+        if (vtCard.options.duration !== 0) {
+            setTimeout(() => {
+                if (!vtCard.options.isFocus) {
+                    destroy(vtCard)
+                }
+            }, vtCard.options.duration)
+        }
     }
 })()
