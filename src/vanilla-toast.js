@@ -225,7 +225,7 @@
         vtCard.style.setProperty("opacity", "0")
 
         setTimeout(() => {
-            vtCard.parentNode.removeChild(v)
+            vtCard.remove()
 
             if (typeof vtCard.options.callback === "function") {
                 vtCard.options.callback()
