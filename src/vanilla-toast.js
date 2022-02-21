@@ -104,6 +104,10 @@
             margin: 0;
             font-size: 14px;
         }
+
+        @media(max-width: 768px){ 
+            .vt-col { flex: unset; } 
+        } 
     `
 
     const styleSheet = document.createElement("style")
